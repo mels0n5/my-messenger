@@ -1,101 +1,158 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Мой мессенджер</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #10121b;
-      color: #ffffff;
-    }
-
-    header {
-      padding: 22px;
-      background: #191c2a;
-      border-bottom: 1px solid #303449;
-    }
-
-    h1 {
-      margin: 0;
-      color: #a78bfa;
-      font-size: 25px;
-    }
-
-    main {
-      max-width: 650px;
-      margin: 35px auto;
-      padding: 20px;
-    }
-
-    .card {
-      background: #1b1f30;
-      border: 1px solid #303449;
-      border-radius: 16px;
-      padding: 22px;
-      margin-bottom: 18px;
-    }
-
-    h2 {
-      margin-top: 0;
-    }
-
-    p {
-      color: #c1c5d5;
-      line-height: 1.5;
-    }
-
-    button {
-      background: #7c5cfc;
-      color: white;
-      border: 0;
-      padding: 12px 18px;
-      border-radius: 10px;
-      font-size: 15px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #6945ed;
-    }
-
-    footer {
-      text-align: center;
-      color: #858ba3;
-      padding: 25px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мой мессенджер</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#10111a;color:#f4f3ff;font-family:Arial,sans-serif}
+button,input{font:inherit}
+button{cursor:pointer}
+.app{display:flex;height:100dvh;max-width:1200px;margin:auto;background:#151622}
+.sidebar{width:320px;flex-shrink:0;border-right:1px solid #303044;padding:22px 14px;display:flex;flex-direction:column}
+.logo{font-size:24px;font-weight:bold;color:#a78bfa;padding:4px 8px 22px}
+.search{width:100%;padding:12px;border-radius:10px;border:1px solid #36364c;background:#202131;color:white;outline:none}
+.section{font-size:12px;color:#9292ae;margin:24px 8px 10px;text-transform:uppercase}
+.chat{display:flex;align-items:center;gap:12px;width:100%;padding:12px;border:0;border-radius:12px;background:transparent;color:white;text-align:left;margin-bottom:5px}
+.chat:hover,.chat.active{background:#29253e}
+.avatar{width:44px;height:44px;border-radius:50%;background:#514078;display:grid;place-items:center;font-weight:bold;flex-shrink:0}
+.chat-info{min-width:0;flex:1}
+.chat-name{font-weight:bold;margin-bottom:5px}
+.last{font-size:12px;color:#aaa9c1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.status{font-size:11px;color:#8fddb0;margin-top:5px}
+.new-chat{margin-top:auto;background:#7655e9;border:0;color:white;padding:13px;border-radius:11px}
+.main{display:flex;flex-direction:column;flex:1;min-width:0}
+.top{height:78px;border-bottom:1px solid #303044;display:flex;align-items:center;gap:12px;padding:15px 22px}
+.top .avatar{width:42px;height:42px}
+.top-name{font-weight:bold}
+.top-status{font-size:12px;color:#8fddb0;margin-top:5px}
+.messages{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:15px}
+.empty{margin:auto;text-align:center;color:#aaa9c1;line-height:1.7}
+.bubble{max-width:75%;padding:12px 15px;border-radius:15px;background:#292a3c;align-self:flex-start;overflow-wrap:anywhere;white-space:pre-wrap}
+.bubble.mine{align-self:flex-end;background:#6849ca}
+.time{font-size:10px;color:#c8c2e3;text-align:right;margin-top:6px}
+.composer{display:flex;gap:10px;padding:16px;border-top:1px solid #303044}
+.composer input{min-width:0;flex:1;background:#202131;border:1px solid #36364c;color:white;border-radius:12px;padding:14px;outline:none}
+.send{border:0;border-radius:12px;padding:0 20px;background:#7655e9;color:white}
+.send:hover,.new-chat:hover{background:#886af5}
+.note{padding:8px 15px;color:#77778f;font-size:11px;text-align:center}
+@media(max-width:650px){
+ .sidebar{width:100%;border:0;padding:12px}
+ .main{display:none}
+ .app.chat-open .sidebar{display:none}
+ .app.chat-open .main{display:flex}
+ .top{height:68px;padding:10px 14px}
+ .messages{padding:16px}
+ .composer{padding:10px}
+ .back{display:block!important}
+ .bubble{max-width:88%}
+}
+.back{display:none;border:0;background:transparent;color:white;font-size:22px}
+</style>
 </head>
 <body>
-  <header>
-    <h1>✦ Мессенджер</h1>
+<div class="app" id="app">
+ <aside class="sidebar">
+  <div class="logo">✦ Мессенджер</div>
+  <input class="search" id="search" placeholder="Поиск чатов..." maxlength="80">
+  <div class="section">Мои сообщения</div>
+  <div id="chat-list"></div>
+  <button class="new-chat" id="new-chat">＋ Новый чат</button>
+ </aside>
+ <main class="main">
+  <header class="top">
+   <button class="back" id="back" aria-label="Назад">‹</button>
+   <div class="avatar" id="head-avatar">А</div>
+   <div>
+    <div class="top-name" id="head-name">Выбери чат</div>
+    <div class="top-status" id="head-status">Твои сообщения появятся здесь</div>
+   </div>
   </header>
-
-  <main>
-    <section class="card">
-      <h2>Добро пожаловать!</h2>
-      <p>Наш мессенджер только начинается.</p>
-      <p>Здесь появятся личные сообщения, группы и список друзей.</p>
-      <button onclick="alert('Скоро здесь появятся чаты!')">
-        Начать общение
-      </button>
-    </section>
-
-    <section class="card">
-      <h2>Что нас ждёт?</h2>
-      <p>✓ Личные и групповые чаты</p>
-      <p>✓ Поиск пользователей по имени и ID</p>
-      <p>✓ История сообщений</p>
-      <p>✓ Статусы онлайн и офлайн</p>
-    </section>
-  </main>
-
-  <footer>Первая версия · 2026</footer>
+  <section class="messages" id="messages">
+   <div class="empty">✦<br>Добро пожаловать!<br>Выбери чат слева или создай новый.</div>
+  </section>
+  <form class="composer" id="form">
+   <input id="message" maxlength="2000" placeholder="Напиши сообщение..." autocomplete="off">
+   <button class="send" type="submit">➤</button>
+  </form>
+  <div class="note">Первая версия · сообщения пока хранятся только в этой открытой странице</div>
+ </main>
+</div>
+<script>
+const chats=[
+ {id:1,name:"Александр",avatar:"А",status:"Демо-чат",messages:[
+  {text:"Привет! 👋",mine:false,time:"21:00"},
+  {text:"Это наш новый мессенджер!",mine:true,time:"21:01"}
+ ]},
+ {id:2,name:"Друзья",avatar:"Д",status:"Демо-группа",messages:[
+  {text:"Добро пожаловать в группу!",mine:false,time:"20:45"}
+ ]},
+ {id:3,name:"Заметки",avatar:"✎",status:"Личный чат",messages:[
+  {text:"Здесь можно попробовать писать сообщения.",mine:false,time:"20:30"}
+ ]}
+];
+let activeId=null;
+const app=document.getElementById("app");
+const list=document.getElementById("chat-list");
+const messages=document.getElementById("messages");
+const input=document.getElementById("message");
+function activeChat(){return chats.find(c=>c.id===activeId)}
+function renderList(){
+ const q=document.getElementById("search").value.toLowerCase();
+ list.innerHTML="";
+ chats.filter(c=>c.name.toLowerCase().includes(q)).forEach(c=>{
+  const b=document.createElement("button");
+  b.className="chat"+(c.id===activeId?" active":"");
+  const av=document.createElement("div");av.className="avatar";av.textContent=c.avatar;
+  const info=document.createElement("div");info.className="chat-info";
+  const name=document.createElement("div");name.className="chat-name";name.textContent=c.name;
+  const last=document.createElement("div");last.className="last";
+  last.textContent=c.messages.length?c.messages[c.messages.length-1].text:"Пока нет сообщений";
+  const status=document.createElement("div");status.className="status";status.textContent=c.status;
+  info.append(name,last,status);b.append(av,info);
+  b.onclick=()=>openChat(c.id);list.append(b);
+ });
+}
+function openChat(id){
+ activeId=id;const c=activeChat();
+ document.getElementById("head-name").textContent=c.name;
+ document.getElementById("head-avatar").textContent=c.avatar;
+ document.getElementById("head-status").textContent=c.status;
+ app.classList.add("chat-open");
+ renderList();renderMessages();input.focus();
+}
+function renderMessages(){
+ const c=activeChat();messages.innerHTML="";
+ if(!c||!c.messages.length){
+  const e=document.createElement("div");e.className="empty";e.textContent="Начни переписку 👋";messages.append(e);return;
+ }
+ c.messages.forEach(m=>{
+  const b=document.createElement("div");b.className="bubble"+(m.mine?" mine":"");
+  b.textContent=m.text;
+  const t=document.createElement("div");t.className="time";t.textContent=m.time;
+  b.append(t);messages.append(b);
+ });
+ messages.scrollTop=messages.scrollHeight;
+}
+document.getElementById("form").addEventListener("submit",e=>{
+ e.preventDefault();const c=activeChat();const text=input.value.trim();
+ if(!c){alert("Сначала выбери чат или создай новый.");return}
+ if(!text)return;
+ const now=new Date().toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"});
+ c.messages.push({text,mine:true,time:now});input.value="";
+ renderMessages();renderList();
+});
+document.getElementById("new-chat").onclick=()=>{
+ const name=prompt("Введи название нового чата:");
+ if(!name||!name.trim())return;
+ const clean=name.trim().slice(0,40);
+ const c={id:Date.now(),name:clean,avatar:clean[0].toUpperCase(),status:"Новый чат",messages:[]};
+ chats.unshift(c);openChat(c.id);
+};
+document.getElementById("search").addEventListener("input",renderList);
+document.getElementById("back").onclick=()=>app.classList.remove("chat-open");
+renderList();
+</script>
 </body>
 </html>
